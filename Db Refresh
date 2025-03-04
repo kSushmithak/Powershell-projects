@@ -1,0 +1,197 @@
+#this code is for refreshing the DB
+
+#Running on the Deployment group job 
+
+#use 1st deployment group job for running this powershell script task
+###Data_export
+
+bcp FORT_Dev2.ref.CanonicalMapping out "\\vfipffil005\EMT_Projects\Suman\Siva\Table_bkp\CanonicalMapping.bcp" -S AZSU-D-WEB-142 -T -n
+
+bcp FORT_Dev2.ref.MappingData out "\\vfipffil005\EMT_Projects\Suman\Siva\Table_bkp\MappingData.bcp" -S AZSU-D-WEB-142 -T -n
+ 
+#use 2nd deployment group job for running the below tasks
+################Drop FKs
+
+$server = "AZSU-D-WEB-142"
+
+$database = "FORT_Dev2"
+ 
+$queries = @(
+
+"ALTER TABLE [ref].[CanonicalMapping] DROP CONSTRAINT [FK_CanonicalMapping_MappingType]"
+
+"ALTER TABLE [ref].[CanonicalMapping] DROP CONSTRAINT [FK_CanonicalMapping_SourceSystem]"
+
+"ALTER TABLE [ref].[MappingData] DROP CONSTRAINT [FK_MappingData_MappingType]"
+
+)
+
+function Execute-SqlQuery {
+
+    param (
+
+        [string]$query
+
+    )
+
+    $connectionString = "Server=$server;Database=$database;Integrated Security=True;encrypt=true;trustServerCertificate=true;"
+
+    $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+
+    $command = New-Object System.Data.SqlClient.SqlCommand($query, $connection)
+
+    try {
+
+        $connection.Open()
+
+        $command.ExecuteNonQuery()
+
+        Write-Host "Executed query: $query"
+
+    } catch {
+
+        Write-Host "Error executing query: $_"
+
+    } finally {
+
+        $connection.Close()
+
+    }
+
+}
+
+foreach ($query in $queries) {
+
+    Execute-SqlQuery -query $query
+
+}
+ 
+##########Table Truncate
+
+$server = "AZSU-D-WEB-142"
+
+$database = "FORT_Dev2"
+ 
+$queries = @(
+
+"Truncate Table [ref].[CanonicalMapping]"
+
+"Truncate Table [ref].[MappingData]"
+
+)
+
+function Execute-SqlQuery {
+
+    param (
+
+        [string]$query
+
+    )
+
+    $connectionString = "Server=$server;Database=$database;Integrated Security=True;encrypt=true;trustServerCertificate=true;"
+
+    $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+
+    $command = New-Object System.Data.SqlClient.SqlCommand($query, $connection)
+
+    try {
+
+        $connection.Open()
+
+        $command.ExecuteNonQuery()
+
+        Write-Host "Executed query: $query"
+
+    } catch {
+
+        Write-Host "Error executing query: $_"
+
+    } finally {
+
+        $connection.Close()
+
+    }
+
+}
+
+foreach ($query in $queries) {
+
+    Execute-SqlQuery -query $query
+
+}
+ 
+###Add FKs
+
+$server = "AZSU-D-WEB-142"
+
+$database = "FORT_Dev2"
+ 
+$queries = @(
+
+"ALTER TABLE [ref].[CanonicalMapping]  WITH NOCHECK ADD  CONSTRAINT [FK_CanonicalMapping_MappingType] FOREIGN KEY([MappingTypeId])
+
+REFERENCES [ref].[MappingType] ([MappingTypeId])"
+
+"ALTER TABLE [ref].[CanonicalMapping] CHECK CONSTRAINT [FK_CanonicalMapping_MappingType]"
+
+"ALTER TABLE [ref].[CanonicalMapping]  WITH NOCHECK ADD  CONSTRAINT [FK_CanonicalMapping_SourceSystem] FOREIGN KEY([SystemCode])
+
+REFERENCES [ref].[SourceSystem] ([SystemCode])"
+
+"ALTER TABLE [ref].[CanonicalMapping] CHECK CONSTRAINT [FK_CanonicalMapping_SourceSystem]"
+
+"ALTER TABLE [ref].[MappingData]  WITH NOCHECK ADD  CONSTRAINT [FK_MappingData_MappingType] FOREIGN KEY([MappingTypeId])
+
+REFERENCES [ref].[MappingType] ([MappingTypeId])"
+
+"ALTER TABLE [ref].[MappingData] CHECK CONSTRAINT [FK_MappingData_MappingType]"
+
+)
+
+function Execute-SqlQuery {
+
+    param (
+
+        [string]$query
+
+    )
+
+    $connectionString = "Server=$server;Database=$database;Integrated Security=True;encrypt=true;trustServerCertificate=true;"
+
+    $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+
+    $command = New-Object System.Data.SqlClient.SqlCommand($query, $connection)
+
+    try {
+
+        $connection.Open()
+
+        $command.ExecuteNonQuery()
+
+        Write-Host "Executed query: $query"
+
+    } catch {
+
+        Write-Host "Error executing query: $_"
+
+    } finally {
+
+        $connection.Close()
+
+    }
+
+}
+
+foreach ($query in $queries) {
+
+    Execute-SqlQuery -query $query
+
+}
+ 
+###Data_import
+
+bcp FORT_Dev2.ref.CanonicalMapping in "\\vfipffil005\EMT_Projects\Suman\Siva\Table_bkp\CanonicalMapping.bcp" -S AZSU-D-WEB-142 -T -n
+
+bcp FORT_Dev2.ref.MappingData in "\\vfipffil005\EMT_Projects\Suman\Siva\Table_bkp\MappingData.bcp" -S AZSU-D-WEB-142 -T -n
+ 
+ 
