@@ -1,0 +1,33 @@
+#DBA Re-index of the job Test_pipeline
+# Define variables
+
+$serverName = "azsu-d-web-184"   # SQL Server Name or IP Address
+
+$databaseName = "SecureEnvironment"          # Database containing the job, typically msdb
+
+$jobName = "Test_Pipeline"        # The name of the job you want to run
+
+$username = "zz_embuild"      # SQL Server Username
+
+$password = "give password"      # SQL Server Password
+
+# Construct the connection string for SQL Server
+
+$connectionString = "Server=$serverName;Database=$databaseName;Integrated Security=False;User Id=$username;Password=$password;"
+
+# Load the SQL Server module (if not loaded already)
+
+Install-Module -Name SqlServer -Force -AllowClobber
+
+Import-Module SqlServer
+
+# SQL command to execute the job
+
+$sqlQuery = "EXEC msdb.dbo.sp_start_job @job_name = '$jobName'"
+
+# Execute the SQL command
+
+Invoke-Sqlcmd -ConnectionString $connectionString -Query $sqlQuery
+
+Write-Host "Job '$jobName' has been started successfully."
+ 
