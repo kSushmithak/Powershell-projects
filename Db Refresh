@@ -10,6 +10,7 @@ bcp FORT_Dev2.ref.CanonicalMapping out "\\vfipffil005\EMT_Projects\Suman\Siva\Ta
 bcp FORT_Dev2.ref.MappingData out "\\vfipffil005\EMT_Projects\Suman\Siva\Table_bkp\MappingData.bcp" -S AZSU-D-WEB-142 -T -n
  
 #use 2nd deployment group job for running the below tasks
+
 ################Drop FKs
 
 $server = "AZSU-D-WEB-142"
