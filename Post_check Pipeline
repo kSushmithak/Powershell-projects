@@ -1,0 +1,69 @@
+# Define the list of server names
+$servers = @("AZSU-D-WEB-159","AZSU-D-WEB-160", "AZSU-D-WEB-161", "AZSU-D-WEB-153","AZSU-D-WEB-154","AZSU-D-WEB-155")
+ 
+ 
+ 
+# Define the counter path for CPU utilization
+$counterPath = '\Processor(_Total)\% Processor Time'
+ 
+ 
+ 
+# Define the duration in seconds (2 minutes = 120 seconds)
+$durationSeconds = 30
+ 
+ 
+ 
+# Get the current timestamp
+$startTime = Get-Date
+ 
+ 
+ 
+# Calculate the end time based on the duration
+$endTime = $startTime.AddSeconds($durationSeconds)
+ 
+ 
+ 
+# Create an empty string to store the CPU utilization details
+$cpuUtilizationDetails = ""
+ 
+ 
+ 
+# Loop through each server
+foreach ($server in $servers) {
+    Write-Host "Server: $server"
+    $cpuUtilizationDetails += "Server: $server`r`n"
+ 
+ 
+ 
+    # Loop until the current time reaches the end time
+    while ((Get-Date).CompareTo($endTime) -lt 0) {
+        # Get CPU utilization data
+        $cpuData = Get-Counter -Counter $counterPath -ComputerName $server
+ 
+ 
+ 
+        # Extract the CPU utilization value
+        $cpuUtilization = $cpuData.CounterSamples.CookedValue
+ 
+ 
+ 
+        # Display the CPU utilization
+        Write-Host "CPU Utilization: $cpuUtilization%"
+        $cpuUtilizationDetails += "CPU Utilization: $cpuUtilization%`r`n"
+ 
+ 
+ 
+        # Delay for 1 second before checking again
+        Start-Sleep -Seconds 1
+    }
+ 
+ 
+ 
+    # Reset the end time for the next server
+    $endTime = $startTime.AddSeconds($durationSeconds)
+ 
+ 
+ 
+    # Add a separator between server results
+    $cpuUtilizationDetails += "`r`n---`r`n"
+}
