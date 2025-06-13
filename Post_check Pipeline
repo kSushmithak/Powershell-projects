@@ -1,3 +1,4 @@
+#which will check if all the servers are working fine after pushing new changes
 # Define the list of server names
 $servers = @("AZSU-D-WEB-159","AZSU-D-WEB-160", "AZSU-D-WEB-161", "AZSU-D-WEB-153","AZSU-D-WEB-154","AZSU-D-WEB-155")
  
